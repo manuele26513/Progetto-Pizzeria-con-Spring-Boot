@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.pizzeria.dto.OrdineDto;
-import com.springboot.pizzeria.exception.NotFoundException;
 import com.springboot.pizzeria.service.OrdineServiceInterface;
 
 @RestController
@@ -26,7 +25,7 @@ import com.springboot.pizzeria.service.OrdineServiceInterface;
 public class OrdineController {
 
 	@Autowired
-	OrdineServiceInterface ordineService;
+	private OrdineServiceInterface ordineService;
 
 	private static final Logger logger = LoggerFactory.getLogger(OrdineController.class);
 
@@ -34,35 +33,53 @@ public class OrdineController {
 	public ResponseEntity<?> insertOrdine(@RequestBody OrdineDto ordineDto) {
 
 		logger.info("**** Inserisco l'ordine ****");
-		
-			ordineService.inserisci(ordineDto);
 
+		try {
+			ordineService.inserisci(ordineDto);
 			logger.info("**** Ordine inserito ****");
 
 			return new ResponseEntity<>(new HttpHeaders(), HttpStatus.CREATED);
+		} catch (Exception e) {
+
+			logger.error("Errore durante l'operazione", e);
+
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 
-		
+	}
+
 	@PutMapping(value = "/updateStatoOrdine")
 	public ResponseEntity<?> updateStatoOrdine(@RequestBody OrdineDto ordineDto) {
 
 		logger.info("**** Modifico lo Stato dell'ordine con id: " + ordineDto.getId() + "****");
 
-		ordineService.updateStatoOrdine(ordineDto);
+		try {
+			ordineService.updateStatoOrdine(ordineDto);
 
-		return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>(new HttpHeaders(), HttpStatus.CREATED);
+		} catch (Exception e) {
+			logger.error("Errore durante l'operazione", e);
+
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
 	}
-	
+
 	@PutMapping(value = "/updateCodice")
 	public ResponseEntity<?> updateCodice(@RequestBody OrdineDto ordineDto) {
 
 		logger.info("**** Modifico il codice dell'ordine con Id: " + ordineDto.getId() + "****");
 
-		ordineService.updateCodiceOrdine(ordineDto);
+		try {
+			ordineService.updateCodiceOrdine(ordineDto);
 
-		return new ResponseEntity<>(HttpStatus.CREATED);
+			return new ResponseEntity<>(HttpStatus.CREATED);
+		} catch (Exception e) {
+			logger.error("Errore durante l'operazione", e);
+
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
 	}
 
@@ -71,60 +88,76 @@ public class OrdineController {
 
 		logger.info("**** Otteniamo tutti gli ordini ****");
 
-		List<OrdineDto> listaOrdini = ordineService.selTutti();
+		try {
+			List<OrdineDto> listaOrdini = ordineService.selTutti();
 
-		if (null == listaOrdini) {
+			if (null == listaOrdini) {
 
-			return new ResponseEntity<List<OrdineDto>>(HttpStatus.NO_CONTENT);
+				return new ResponseEntity<List<OrdineDto>>(HttpStatus.NO_CONTENT);
+			}
+
+			logger.info("Numero dei record: " + listaOrdini.size());
+
+			return new ResponseEntity<List<OrdineDto>>(listaOrdini, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Errore durante l'operazione", e);
+
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		logger.info("Numero dei record: " + listaOrdini.size());
-
-		return new ResponseEntity<List<OrdineDto>>(listaOrdini, HttpStatus.OK);
 
 	}
 
 	@GetMapping(value = "/findById/{id}", produces = "application/json")
-	public ResponseEntity<OrdineDto> findById(@PathVariable("id") Integer id) throws NotFoundException {
+	public ResponseEntity<OrdineDto> findById(@PathVariable("id") Integer id) {
+		
+		logger.info("**** Otteniamo l'ordine con id " + id + "****");
+		
+		try {
+			OrdineDto ordineDto = ordineService.selById(id);
 
-		logger.info("**** Otteniamo l'ordine con Id: " + id + "****");
+			if (null == ordineDto) {
 
-		OrdineDto ordineDto = ordineService.selById(id);
+				logger.warn("Impossibile trovare l'ordine con id: " + id);
 
-		if (null == ordineDto) {
-			
-			throw new NotFoundException("Ordine Assente o Id Errato");
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
 
-//			logger.warn("Impossibile trovare l'ordine con id: " + id);
-//
-//			return new ResponseEntity<Ordine>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<OrdineDto>(ordineDto, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Errore durante l'operazione", e);
+
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
-
-		return new ResponseEntity<OrdineDto>(ordineDto, HttpStatus.OK);
 
 	}
 
 	@DeleteMapping(value = "/delete/{id}")
-	public ResponseEntity<?> deleteById(@PathVariable("id") Integer id) throws NotFoundException {
+	public ResponseEntity<?> deleteById(@PathVariable("id") Integer id) {
 
 		logger.info("**** Eliminiamo l'ordine con Id: " + id + "****");
 
-		OrdineDto ordineDto = ordineService.selById(id);
+		try {
+			OrdineDto ordineDto = ordineService.selById(id);
 
-		if (null == ordineDto) {
-			
-			throw new NotFoundException("Ordine Assente o Id Errato");
+			if (null == ordineDto) {
 
-//			logger.warn("Impossibile trovare l'ordine con id: " + id);
-//
-//			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				logger.warn("Impossibile trovare l'ordine con id: " + id);
 
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+			}
+
+			ordineService.elimina(ordineDto);
+
+			return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
+
+		} catch (Exception e) {
+
+			logger.error("Errore durante l'operazione", e);
+
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		ordineService.elimina(ordineDto);
-
-		return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
-
 	}
-
 }

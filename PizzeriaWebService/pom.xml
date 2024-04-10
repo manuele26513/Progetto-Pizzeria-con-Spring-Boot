@@ -26,7 +26,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -52,13 +52,13 @@
 			<scope>test</scope>
 		</dependency>
 	
-		<!-- Librerie MapStruct -->
+	<!-- Librerie MapStruct -->
 	 <dependency>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct</artifactId>
         <version>1.5.5.Final</version>
     </dependency>
-   
+    
     <!-- Compilatore MapStruct -->
     <dependency>		
 		<groupId>org.mapstruct</groupId>
@@ -66,6 +66,15 @@
         <version>1.5.5.Final</version>
         <scope>provided</scope>		
 	</dependency>
+	
+	<!-- Estensione MapStruct per Spring -->
+	<dependency>
+        <groupId>org.mapstruct.extensions.spring</groupId>
+        <artifactId>mapstruct-spring-annotations</artifactId>
+        <version>0.0.1</version>
+    </dependency>
+   
+   
 	
 	</dependencies>
 

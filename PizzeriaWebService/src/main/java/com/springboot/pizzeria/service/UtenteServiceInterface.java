@@ -6,19 +6,19 @@ import com.springboot.pizzeria.dto.UtenteDto;
 
 public interface UtenteServiceInterface {
 	
-	List<UtenteDto> selTutti();
+	List<UtenteDto> selTutti() throws Exception;
 	
-	UtenteDto selById(Integer id);
+	UtenteDto selById(Integer id) throws Exception;
 	
-	UtenteDto selByEmailPassword(UtenteDto utenteDto);	
+	UtenteDto selByEmailPassword(UtenteDto utenteDto) throws Exception;	
 	
-	void elimina(UtenteDto utenteDto);
+	void elimina(UtenteDto utenteDto) throws Exception;
 	
-	void inserisci(UtenteDto utenteDto);
+	void inserisci(UtenteDto utenteDto) throws Exception;
 	
-	void updatePassword(UtenteDto utenteDto);
+	void updatePassword(UtenteDto utenteDto) throws Exception;
 	
-	void updateEmail(UtenteDto utenteDto);
+	void updateEmail(UtenteDto utenteDto) throws Exception;
 	
 
 

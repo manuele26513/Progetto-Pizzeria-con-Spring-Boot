@@ -14,45 +14,58 @@ import com.springboot.pizzeria.repository.ProdottoRepository;
 
 @Service
 @Transactional
-public class ProdottoService implements ProdottoServiceInterface{
-	
+public class ProdottoService implements ProdottoServiceInterface {
+
 	@Autowired
-	ProdottoRepository prodottoRepository;
+	private ProdottoRepository prodottoRepository;
 
 	@Override
-	public ProdottoDto selById(Integer id) {
-		
-		Prodotto prodotto = prodottoRepository.findProdottoById(id);
-		
-		return ProdottoMapper.MAPPER.mapToProdottoDto(prodotto);
+	public ProdottoDto selById(Integer id) throws Exception {
+		try {
+			Prodotto prodotto = prodottoRepository.findProdottoById(id);
+
+			return ProdottoMapper.MAPPER.mapToProdottoDto(prodotto);
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+
 	}
 
 	@Override
-	public List<ProdottoDto> selTutti() {
-		
-		List<Prodotto> listaProdotti = prodottoRepository.findAll();
-		
-		return listaProdotti.stream()
-				.map((Prodotto) -> ProdottoMapper.MAPPER.mapToProdottoDto(Prodotto))
-				.collect(Collectors.toList());
+	public List<ProdottoDto> selTutti() throws Exception {
+		try {
+			List<Prodotto> listaProdotti = prodottoRepository.findAll();
+
+			return listaProdotti.stream()
+					.map((Prodotto) -> ProdottoMapper.MAPPER.mapToProdottoDto(Prodotto))
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+
 	}
 
 	@Override
-	public void inserisci(ProdottoDto prodottoDto) {
-		
-		Prodotto prodotto = ProdottoMapper.MAPPER.mapToProdotto(prodottoDto);
-		prodottoRepository.saveAndFlush(prodotto);
-		
+	public void inserisci(ProdottoDto prodottoDto) throws Exception {
+		try {
+			Prodotto prodotto = ProdottoMapper.MAPPER.mapToProdotto(prodottoDto);
+			prodottoRepository.saveAndFlush(prodotto);
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+
 	}
 
 	@Override
-	public void elimina(ProdottoDto prodottoDto) {
-		
+	public void elimina(ProdottoDto prodottoDto) throws Exception {
+		try {
 		Prodotto prodotto = ProdottoMapper.MAPPER.mapToProdotto(prodottoDto);
 		prodottoRepository.delete(prodotto);
 		
+	}catch (Exception e){
+		throw new Exception (e.getMessage());
 	}
 
-	
+	}
 
 }
